@@ -1,92 +1,90 @@
-<div align="center">
-  <br />
-  <h1>🌌 CodeVerse</h1>
-  <p>
-    <strong>A next-generation, cloud-based Integrated Development Environment (IDE).</strong>
-  </p>
-  <p>
-    <a href="https://codeverse-main-ruby.vercel.app"><img src="https://img.shields.io/badge/Website-codeverse--main--ruby.vercel.app-blue?style=for-the-badge&logo=vercel" alt="Website" /></a>
-    <a href="https://nextjs.org"><img src="https://img.shields.io/badge/Next.js-16.3-black?style=for-the-badge&logo=next.js" alt="Next.js" /></a>
-    <a href="https://tailwindcss.com"><img src="https://img.shields.io/badge/TailwindCSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss" alt="Tailwind CSS" /></a>
-    <a href="https://www.prisma.io"><img src="https://img.shields.io/badge/Prisma-ORM-2D3748?style=for-the-badge&logo=prisma" alt="Prisma" /></a>
-  </p>
-</div>
+# CodeVerse
 
-## 🚀 Overview
+A cloud-based code editor and development workspace running directly in the browser. Powered by Next.js, Monaco Editor, Prisma, and serverless PostgreSQL on Neon.
 
-CodeVerse is a modern, highly responsive web-based code editor built to eliminate the friction of local environment setups. Spin up full workspaces, write code in a VS Code-like environment, and seamlessly save your projects to the cloud.
+[![Website](https://img.shields.io/badge/Live_Demo-codeverse--main--ruby.vercel.app-blue?style=flat-square&logo=vercel)](https://codeverse-main-ruby.vercel.app)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=flat-square&logo=next.js)](https://nextjs.org)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4-06B6D4?style=flat-square&logo=tailwindcss)](https://tailwindcss.com)
+[![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma)](https://www.prisma.io)
 
-## ✨ Features
+---
 
-- **Robust Authentication:** Secure, instant logins using Google and GitHub OAuth providers (powered by NextAuth.js).
-- **Persistent Cloud Workspaces:** Save your projects seamlessly to a PostgreSQL database. Pick up right where you left off from any device.
-- **VS Code Experience in Browser:** Full integration with the Monaco Editor. Enjoy syntax highlighting, auto-completion, multi-cursor editing, and bracket pairing.
-- **Dynamic File Explorer:** Manage files, import repositories directly from GitHub, or start from built-in templates (React, Python, etc.).
-- **Interactive UI:** Smooth Framer Motion transitions, split-pane designs, and a beautiful sleek dark mode default theme.
-- **Secure Route Protection:** Middleware-level protection for sensitive dashboards and settings.
+## Architecture & Data Flow
 
-## 🛠️ Tech Stack
+```
+┌─────────────────────────────────┐        ┌──────────────────────────────┐        ┌───────────────────────────┐
+│        Browser Client           │ ─────> │     Next.js (App Router)     │ ─────> │    Neon PostgreSQL        │
+│ Monaco Editor + Dynamic Explorer│ <───── │ NextAuth + Server Actions API│ <───── │ Prisma Schema Workspaces  │
+└─────────────────────────────────┘        └──────────────────────────────┘        └───────────────────────────┘
+```
 
-- **Framework:** [Next.js (App Router)](https://nextjs.org/)
-- **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-- **Authentication:** [NextAuth.js](https://next-auth.js.org/)
-- **Database:** [PostgreSQL](https://www.postgresql.org/) (hosted on [Neon](https://neon.tech/))
-- **ORM:** [Prisma](https://www.prisma.io/)
-- **Code Editor:** [Monaco Editor](https://microsoft.github.io/monaco-editor/)
-- **Animations:** [Framer Motion](https://www.framer.com/motion/)
+1. **Editor Engine:** Monaco Editor is loaded dynamically on the client side (`next/dynamic` with SSR disabled) to provide VS Code-standard syntax highlighting, auto-completion, bracket pairing, and multi-cursor editing.
+2. **Session & Auth Layer:** NextAuth.js provides OAuth session management (GitHub and Google OAuth) with JWT tokens and edge middleware route guards.
+3. **Workspace State:** Project file trees, custom configurations, and files are stored in PostgreSQL on Neon via Prisma ORM, enabling users to switch devices without losing state.
+4. **Responsive Split-Pane UI:** Built with Tailwind CSS and Framer Motion for smooth tab transitions and adjustable workspace panels.
 
-## 💻 Running Locally
+## Tech Stack
 
-Follow these steps to set up the CodeVerse environment on your local machine.
+* **Framework:** Next.js (App Router) & React
+* **Code Editor:** Monaco Editor (`@monaco-editor/react`)
+* **Styling & Motion:** Tailwind CSS, Framer Motion, Lucide Icons
+* **Database & ORM:** PostgreSQL (Neon Serverless), Prisma ORM
+* **Authentication:** NextAuth.js (GitHub & Google OAuth)
+* **Deployment:** Vercel
 
-### 1. Clone the Repository
+## Running Locally
+
+Follow these steps to run CodeVerse in your local development environment:
+
+### 1. Clone the repository
 ```bash
 git clone https://github.com/Adbhut1234/Codeverse.git
 cd Codeverse
 ```
 
-### 2. Install Dependencies
+### 2. Install dependencies
 ```bash
 npm install
 ```
 
-### 3. Configure Environment Variables
-Create a `.env.local` file in the root of the project and populate it with your credentials:
+### 3. Configure environment variables
+Create a `.env.local` file in the root directory:
 
 ```env
 # NextAuth Configuration
 NEXTAUTH_URL=http://localhost:3000
 NEXTAUTH_SECRET=your_secure_random_secret_string
 
-# GitHub OAuth App
+# GitHub OAuth App (from GitHub Developer Settings)
 GITHUB_ID=your_github_client_id
 GITHUB_SECRET=your_github_client_secret
 
-# Google OAuth App
+# Google OAuth App (from Google Cloud Console)
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 
-# Neon PostgreSQL Database
-DATABASE_URL="your_postgresql_connection_string"
+# Neon PostgreSQL Database Connection
+DATABASE_URL="postgresql://user:password@endpoint.neon.tech/neondb?sslmode=require"
 ```
 
-### 4. Setup the Database
-Sync your Prisma schema with the PostgreSQL database:
+### 4. Push database schema
+Synchronize your Prisma schema with your PostgreSQL database:
 ```bash
 npx prisma db push
 ```
 
-### 5. Start the Development Server
+### 5. Start development server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## 🌍 Deployment
+## Deployment
 
-CodeVerse is designed to be easily deployed on [Vercel](https://vercel.com).
-*When deploying, ensure that you run `prisma generate` during the build step (which is already configured via the `postinstall` script in `package.json`). Ensure all environment variables are correctly mapped in your Vercel project settings.*
+CodeVerse is configured for deployment on [Vercel](https://vercel.com):
+* Run `prisma generate` during build (pre-configured via `postinstall` in `package.json`).
+* Ensure all environment variables from `.env.local` are configured in your Vercel project dashboard.
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License.
